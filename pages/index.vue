@@ -1,6 +1,7 @@
 <template>
     <div class="container">
         <div>
+            {{ greeting }}
             <Logo />
             <h1 class="title">stack-shuffle</h1>
             <div class="links">
@@ -28,7 +29,16 @@
 <script lang="ts">
 import Vue from "vue";
 
-export default Vue.extend({});
+interface Hello {
+    greeting: string;
+}
+
+export default Vue.extend({
+    async asyncData({ $axios }) {
+        const { greeting } = await $axios.$get<Hello>("/api/hello");
+        return { greeting };
+    },
+});
 </script>
 
 <style>
