@@ -1,81 +1,112 @@
 <template>
     <div class="container">
         <div>
-            {{ greeting }}
-            <Logo />
-            <h1 class="title">stack-shuffle</h1>
-            <div class="links">
-                <a
-                    href="https://nuxtjs.org/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="button--green"
-                >
-                    Documentation
-                </a>
-                <a
-                    href="https://github.com/nuxt/nuxt.js"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="button--grey"
-                >
-                    GitHub
-                </a>
-            </div>
+            <h1>Stack Shuffle</h1>
+            <ul>
+                <li v-for="question in questions" :key="question.id">
+                    <h2>{{ question.title }}</h2>
+                    <button
+                        v-show="!isExpanded[question.id]"
+                        @click="toggleQuestion(question.id)"
+                    >
+                        Show
+                    </button>
+                    <!--
+                        If I understand the Stack Exchange API documentation correctly,
+                        we can trust the html they are giving us:
+                        https://api.stackexchange.com/docs/filters
+                    -->
+                    <div
+                        v-show="
+                            isExpanded[question.id] &&
+                            isCorrect[question.id] === undefined
+                        "
+                    >
+                        <div v-html="question.body" />
+                        <div
+                            v-for="(answer, index) in answers[question.id]"
+                            :key="index"
+                        >
+                            <button @click="pickAnswer(question.id, index)">
+                                Pick Me!
+                            </button>
+                            <div v-html="answer.body" />
+                        </div>
+                    </div>
+                    <div v-show="isCorrect[question.id]">Yay! You got it!</div>
+                    <div v-show="isCorrect[question.id] === false">
+                        Sorry :(
+                    </div>
+                </li>
+            </ul>
         </div>
     </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
-
-interface Hello {
-    greeting: string;
-}
+import { Answer, Question } from "~/model";
 
 export default Vue.extend({
     async asyncData({ $axios }) {
-        const { greeting } = await $axios.$get<Hello>("/api/hello");
-        return { greeting };
+        const isLoaded = true;
+        const questions = await $axios.$get<Question[]>("/api/questions");
+        const isExpanded = questions.reduce(
+            (previous, current) => ({ ...previous, [current.id]: false }),
+            {}
+        );
+        const answers = questions.reduce(
+            (previous, current) => ({ ...previous, [current.id]: undefined }),
+            {}
+        );
+        const isCorrect = questions.reduce(
+            (previous, current) => ({ ...previous, [current.id]: undefined }),
+            {}
+        );
+
+        return { isLoaded, questions, isExpanded, answers, isCorrect };
+    },
+    data() {
+        const isLoaded = false;
+        const questions: Question[] = [];
+        const isExpanded: { [questionId: number]: boolean } = {};
+        const answers: { [questionId: number]: Answer[] | undefined } = {};
+        const isCorrect: { [questionId: number]: boolean | undefined } = {};
+
+        return {
+            isLoaded,
+            questions,
+            isExpanded,
+            answers,
+            isCorrect,
+        };
+    },
+    methods: {
+        async toggleQuestion(id: number) {
+            this.isExpanded[id] = !this.isExpanded[id];
+
+            if (!this.answers[id]) {
+                const answers = await this.$axios.$get<Answer[]>(
+                    `/api/questions/${id}/answers`
+                );
+                this.answers[id] = answers;
+            }
+        },
+        pickAnswer(questionId: number, index: number) {
+            const answers = this.answers[questionId];
+
+            if (!answers) {
+                return;
+            }
+
+            this.isCorrect[questionId] = answers[index]?.isAccepted;
+        },
     },
 });
 </script>
 
 <style>
-/* Sample `apply` at-rules with Tailwind CSS
-.container {
-@apply min-h-screen flex justify-center items-center text-center mx-auto;
-}
-*/
 .container {
     margin: 0 auto;
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-}
-
-.title {
-    font-family: "Quicksand", "Source Sans Pro", -apple-system,
-        BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial,
-        sans-serif;
-    display: block;
-    font-weight: 300;
-    font-size: 100px;
-    color: #35495e;
-    letter-spacing: 1px;
-}
-
-.subtitle {
-    font-weight: 300;
-    font-size: 42px;
-    color: #526488;
-    word-spacing: 5px;
-    padding-bottom: 15px;
-}
-
-.links {
-    padding-top: 15px;
 }
 </style>
