@@ -9,13 +9,13 @@
                     :key="question.id"
                 >
                     <h2 class="text-lg font-bold mb-4">{{ question.title }}</h2>
-                    <button
-                        class="p-2 text-blue-800 border-blue-800 border-2 rounded"
+                    <Button
                         v-show="!isExpanded[question.id]"
+                        color="blue"
                         @click="toggleQuestion(question.id)"
                     >
                         Show Question
-                    </button>
+                    </Button>
                     <!--
                         If I understand the Stack Exchange API documentation correctly,
                         we can trust the html they are giving us:
@@ -33,12 +33,12 @@
                             v-for="(answer, index) in answers[question.id]"
                             :key="index"
                         >
-                            <button
-                                class="p-2 text-orange-800 border-orange-800 border-2 rounded"
+                            <Button
+                                color="orange"
                                 @click="pickAnswer(question.id, index)"
                             >
                                 Pick Me!
-                            </button>
+                            </Button>
                             <div v-html="answer.body" />
                         </div>
                     </div>
