@@ -1,15 +1,20 @@
 <template>
     <div class="container">
-        <div>
-            <h1>Stack Shuffle</h1>
+        <div class="m-6">
+            <h1 class="text-2xl text-blue-700 mb-4">Stack Shuffle</h1>
             <ul>
-                <li v-for="question in questions" :key="question.id">
-                    <h2>{{ question.title }}</h2>
+                <li
+                    class="mb-4 p-4 border-gray-500 border-2 border-dashed rounded"
+                    v-for="question in questions"
+                    :key="question.id"
+                >
+                    <h2 class="text-lg font-bold mb-4">{{ question.title }}</h2>
                     <button
+                        class="p-2 text-blue-800 border-blue-800 border-2 rounded"
                         v-show="!isExpanded[question.id]"
                         @click="toggleQuestion(question.id)"
                     >
-                        Show
+                        Show Question
                     </button>
                     <!--
                         If I understand the Stack Exchange API documentation correctly,
@@ -22,19 +27,31 @@
                             isCorrect[question.id] === undefined
                         "
                     >
-                        <div v-html="question.body" />
+                        <div class="bg-blue-100 mb-4" v-html="question.body" />
                         <div
+                            class="bg-gray-200 my-4"
                             v-for="(answer, index) in answers[question.id]"
                             :key="index"
                         >
-                            <button @click="pickAnswer(question.id, index)">
+                            <button
+                                class="p-2 text-orange-800 border-orange-800 border-2 rounded"
+                                @click="pickAnswer(question.id, index)"
+                            >
                                 Pick Me!
                             </button>
                             <div v-html="answer.body" />
                         </div>
                     </div>
-                    <div v-show="isCorrect[question.id]">Yay! You got it!</div>
-                    <div v-show="isCorrect[question.id] === false">
+                    <div
+                        class="text-lg text-green-600"
+                        v-show="isCorrect[question.id]"
+                    >
+                        Yay! You got it!
+                    </div>
+                    <div
+                        class="text-lg text-red-800"
+                        v-show="isCorrect[question.id] === false"
+                    >
                         Sorry :(
                     </div>
                 </li>
