@@ -1,2 +1,1 @@
-web: cd app
-web: nuxt start
+web: nuxt-ts start
