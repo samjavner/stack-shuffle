@@ -4,9 +4,9 @@
             <h1 class="text-2xl text-blue-700 mb-4">Stack Shuffle</h1>
             <ul>
                 <li
-                    class="mb-4 p-4 border-gray-500 border-2 border-dashed rounded"
                     v-for="question in questions"
                     :key="question.id"
+                    class="mb-4 p-4 border-gray-500 border-2 border-dashed rounded"
                 >
                     <h2 class="text-lg font-bold mb-4">{{ question.title }}</h2>
                     <Button
@@ -29,9 +29,9 @@
                     >
                         <div class="bg-blue-100 mb-4" v-html="question.body" />
                         <div
-                            class="bg-gray-200 my-4"
                             v-for="(answer, index) in answers[question.id]"
                             :key="index"
+                            class="bg-gray-200 my-4"
                         >
                             <Button
                                 color="orange"
@@ -43,14 +43,14 @@
                         </div>
                     </div>
                     <div
-                        class="text-lg text-green-600"
                         v-show="isCorrect[question.id]"
+                        class="text-lg text-green-600"
                     >
                         Yay! You got it!
                     </div>
                     <div
-                        class="text-lg text-red-800"
                         v-show="isCorrect[question.id] === false"
+                        class="text-lg text-red-800"
                     >
                         Sorry :(
                     </div>
