@@ -44,6 +44,7 @@
 </template>
 
 <script lang="ts">
+import _ from "lodash";
 import Vue from "vue";
 import { Answer, Question } from "~/model";
 
@@ -89,7 +90,7 @@ export default Vue.extend({
                 const answers = await this.$axios.$get<Answer[]>(
                     `/api/questions/${id}/answers`
                 );
-                this.answers[id] = answers;
+                this.answers[id] = _.shuffle(answers);
             }
         },
         pickAnswer(questionId: number, index: number) {
